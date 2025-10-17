@@ -2973,37 +2973,37 @@ def LocalgetTableData(sid):
         return Response({"error": str(e)}, status=500)
 
 
-# def table_to_custom_json(table_name):
-#     # Get column names
-#     with connection.cursor() as cursor:
-#         cursor.execute(f"PRAGMA table_info({table_name})")
-#         columns_info = cursor.fetchall()
-#     columns = [col[1] for col in columns_info]
-#     columns.append(columns.pop(0))
-#     # Fetch all rows into pandas DataFrame
-#     query = f"SELECT * FROM {table_name}"
-#     df = pd.read_sql_query(query, connection)
+def table_to_custom_json(table_name):
+    # Get column names
+    with connection.cursor() as cursor:
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        columns_info = cursor.fetchall()
+    columns = [col[1] for col in columns_info]
+    columns.append(columns.pop(0))
+    # Fetch all rows into pandas DataFrame
+    query = f"SELECT * FROM {table_name}"
+    df = pd.read_sql_query(query, connection)
 
-#     # Function to determine if column should be displayed
-#     def should_display(col):
-#         # Check if any value in the column is neither null nor empty (after stripping spaces)
-#         return int(df[col].dropna().astype(str).str.strip().replace('', None).notnull().any())
+    # Function to determine if column should be displayed
+    def should_display(col):
+        # Check if any value in the column is neither null nor empty (after stripping spaces)
+        return int(df[col].dropna().astype(str).str.strip().replace('', None).notnull().any())
 
-#     # Build json_columns as list of {key, value, display}
-#     json_columns = [{'key': i, 'value': col, 'display': should_display(col)} for i, col in enumerate(columns)]
+    # Build json_columns as list of {key, value, display}
+    json_columns = [{'key': i, 'value': col, 'display': should_display(col)} for i, col in enumerate(columns)]
 
-#     # Convert DataFrame rows into dict list
-#     json_data = json.loads(df.to_json(orient='records'))
+    # Convert DataFrame rows into dict list
+    json_data = json.loads(df.to_json(orient='records'))
 
-#     # Prepare return JSON structure
-#     return_json = {
-#         "rows": json_data,
-#         "columns": json_columns
-#     }
+    # Prepare return JSON structure
+    return_json = {
+        "rows": json_data,
+        "columns": json_columns
+    }
     
-#     print("hiiiii",json_columns)  # for debug/logging
+    print("hiiiii",json_columns)  # for debug/logging
 
-#     return JsonResponse(return_json, safe=False)
+    return JsonResponse(return_json, safe=False)
 
 
 @api_view(['GET'])
@@ -7056,34 +7056,32 @@ def validate_and_copy_errors(data_table, error_table, pk_fields):
 
 
 
-def table_to_custom_json(table_name):
-    # Get column names
-    with connection.cursor() as cursor:
-        cursor.execute(f"PRAGMA table_info({table_name})")
-        columns_info = cursor.fetchall()
-    columns = [col[1] for col in columns_info]
+# def table_to_custom_json(table_name):
+#     # Get column names
+#     with connection.cursor() as cursor:
+#         cursor.execute(f"PRAGMA table_info({table_name})")
+#         columns_info = cursor.fetchall()
+#     columns = [col[1] for col in columns_info]
 
-    # Fetch all rows into pandas DataFrame
-    query = f"SELECT * FROM {table_name}"
-    df = pd.read_sql_query(query, connection)
+#     # Fetch all rows into pandas DataFrame
+#     query = f"SELECT * FROM {table_name}"
+#     df = pd.read_sql_query(query, connection)
 
-    # Build json_columns as list of {key, value}
-    json_columns = [{'key': i, 'value': col} for i, col in enumerate(columns)]
+#     # Build json_columns as list of {key, value}
+#     json_columns = [{'key': i, 'value': col} for i, col in enumerate(columns)]
 
-    # Convert DataFrame rows into dict list
-    json_data = df.to_dict(orient='records')
+#     # Convert DataFrame rows into dict list
+#     json_data = df.to_dict(orient='records')
 
-    # Prepare return JSON structure
-    # json_columns.insert(0,json_columns[-1])
-    # json_columns.pop(-1)
-    return_json = {
-        "rows": json_columns,
-        "columns": json_data
-    }
-
-    print(columns)  # for debug/logging
-
-    return JsonResponse(return_json, safe=False)
+#     # Prepare return JSON structure
+#     # json_columns.insert(0,json_columns[-1])
+#     # json_columns.pop(-1)
+#     return_json = {
+#         "rows": json_columns,
+#         "columns": json_data
+#     }
+#     print(columns)  # for debug/logging
+#     return JsonResponse(return_json, safe=False)
 
 
 @api_view(['GET'])
@@ -7162,6 +7160,25 @@ def get_validation_table(request,pid,oid,sid):
         "columns": []
         }
     ,safe=False)
+
+
+
+
+
+
+        
+
+    
+
+
+
+
+
+
+
+
+
+
 
 
 
