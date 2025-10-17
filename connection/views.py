@@ -1585,6 +1585,9 @@ def objects_delete(request,oid):
             seg = segments.objects.filter(project_id=obj.project_id,obj_id=oid)
             for s in seg:
                 deleteSqlLiteTable(s.table_name)
+                deleteSqlLiteTable(s.table_name+"_src")
+                deleteSqlLiteTable(s.table_name+"_err")
+                deleteSqlLiteTable(s.table_name+"_val")
             serializer = ObjectSerializer(obj)
             obj.delete()
             return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
@@ -2970,7 +2973,37 @@ def LocalgetTableData(sid):
         return Response({"error": str(e)}, status=500)
 
 
+# def table_to_custom_json(table_name):
+#     # Get column names
+#     with connection.cursor() as cursor:
+#         cursor.execute(f"PRAGMA table_info({table_name})")
+#         columns_info = cursor.fetchall()
+#     columns = [col[1] for col in columns_info]
+#     columns.append(columns.pop(0))
+#     # Fetch all rows into pandas DataFrame
+#     query = f"SELECT * FROM {table_name}"
+#     df = pd.read_sql_query(query, connection)
 
+#     # Function to determine if column should be displayed
+#     def should_display(col):
+#         # Check if any value in the column is neither null nor empty (after stripping spaces)
+#         return int(df[col].dropna().astype(str).str.strip().replace('', None).notnull().any())
+
+#     # Build json_columns as list of {key, value, display}
+#     json_columns = [{'key': i, 'value': col, 'display': should_display(col)} for i, col in enumerate(columns)]
+
+#     # Convert DataFrame rows into dict list
+#     json_data = json.loads(df.to_json(orient='records'))
+
+#     # Prepare return JSON structure
+#     return_json = {
+#         "rows": json_data,
+#         "columns": json_columns
+#     }
+    
+#     print("hiiiii",json_columns)  # for debug/logging
+
+#     return JsonResponse(return_json, safe=False)
 
 
 @api_view(['GET'])
@@ -2984,17 +3017,19 @@ def getTableData(request,sid):
             return Response({"error": "Segment not found"}, status=404)
  
         table_name = segment.table_name # Access table_name directly from the segment object
-        df_valid = get_valid_data_frame(table_name)
-        print(df_valid)
-        json_data = df_valid.to_dict(orient="records")
-        columns=list(df_valid.columns)
-        json_columns = [{'key': i, 'value': col} for i, col in enumerate(columns)]
-        return_json = {
-        "rows": json_data,
-        "columns": json_columns
-        }
+        print(table_name)
+        return table_to_custom_json(table_name)
+        # df_valid = get_valid_data_frame(table_name)
+        # print(df_valid)
+        # json_data = df_valid.to_dict(orient="records")
+        # columns=list(df_valid.columns)
+        # json_columns = [{'key': i, 'value': col} for i, col in enumerate(columns)]
+        # return_json = {
+        # "rows": json_data,
+        # "columns": json_columns
+        # }
         
-        return JsonResponse(return_json,safe=False)
+        # return JsonResponse(return_json,safe=False)
         # print(table_name)
         # with connections["default"].cursor() as cursor:
         #     cursor.execute(f"SELECT * FROM {table_name}")
@@ -7039,8 +7074,8 @@ def table_to_custom_json(table_name):
     json_data = df.to_dict(orient='records')
 
     # Prepare return JSON structure
-    json_columns.insert(0,json_columns[-1])
-    json_columns.pop(-1)
+    # json_columns.insert(0,json_columns[-1])
+    # json_columns.pop(-1)
     return_json = {
         "rows": json_columns,
         "columns": json_data
@@ -7127,25 +7162,6 @@ def get_validation_table(request,pid,oid,sid):
         "columns": []
         }
     ,safe=False)
-
-
-
-
-
-
-        
-
-    
-
-
-
-
-
-
-
-
-
-
 
 
 
